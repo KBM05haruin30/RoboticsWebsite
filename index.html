@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incheon Robotics Website</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Basic animation classes */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      }
+      .fade-in-up.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .fade-in-scale {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      }
+      .fade-in-scale.is-visible {
+        opacity: 1;
+        transform: scale(1);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900">
+    <main
+      id="main-container"
+      class="h-screen w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-slate-900"
+    >
+      <!-- Navigation Bar -->
+      <nav
+        id="navbar"
+        class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-5 text-white"
+      >
+        <div
+          class="container mx-auto px-4 md:px-8 flex items-center justify-between"
+        >
+          <div
+            id="logo-container"
+            class="flex items-center gap-3 cursor-pointer"
+            data-scroll-to="about"
+          >
+            <img
+              src="./assets/Logo-removebg-preview.png"
+              alt="Incheon Robotics Logo"
+              class="w-10 h-10 transition-all logo-img"
+            />
+            <span
+              class="font-bold text-xl tracking-tight"
+              data-lang-key="nav.companyName"
+              >인천 로보틱스</span
+            >
+          </div>
+
+          <div class="hidden md:flex items-center gap-8">
+            <button
+              data-scroll-to="about"
+              class="nav-link hover:text-[#0B79BE] transition-colors font-medium"
+              data-lang-key="nav.about"
+            >
+              소개
+            </button>
+            <button
+              data-scroll-to="features"
+              class="nav-link hover:text-[#0B79BE] transition-colors font-medium"
+              data-lang-key="nav.features"
+            >
+              특징
+            </button>
+            <button
+              data-scroll-to="simulations"
+              class="nav-link hover:text-[#0B79BE] transition-colors font-medium"
+              data-lang-key="nav.simulations"
+            >
+              시뮬레이션
+            </button>
+            <button
+              data-scroll-to="contact"
+              class="nav-link hover:text-[#0B79BE] transition-colors font-medium"
+              data-lang-key="nav.contact"
+            >
+              문의하기
+            </button>
+            <div class="h-6 w-px bg-current opacity-30"></div>
+            <button
+              id="lang-toggle-desktop"
+              class="flex items-center gap-2 hover:text-[#0B79BE] transition-colors font-medium"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                ></path>
+              </svg>
+              <span id="lang-text-desktop">EN</span>
+            </button>
+          </div>
+
+          <div class="md:hidden flex items-center gap-4">
+            <button
+              id="lang-toggle-mobile"
+              class="flex items-center gap-1 hover:text-[#0B79BE] transition-colors font-medium text-sm"
+            >
+              <span id="lang-text-mobile">EN</span>
+            </button>
+            <button id="mobile-menu-toggle">
+              <svg
+                id="menu-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="4" x2="20" y1="12" y2="12"></line>
+                <line x1="4" x2="20" y1="6" y2="6"></line>
+                <line x1="4" x2="20" y1="18" y2="18"></line>
+              </svg>
+              <svg
+                id="x-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="hidden"
+              >
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden bg-white border-t border-slate-100 text-slate-900 overflow-hidden"
+        >
+          <div class="flex flex-col p-4 gap-4">
+            <button
+              data-scroll-to="about"
+              class="nav-link text-left py-2 px-4 hover:bg-slate-50 rounded-lg"
+              data-lang-key="nav.about"
+            >
+              소개
+            </button>
+            <button
+              data-scroll-to="features"
+              class="nav-link text-left py-2 px-4 hover:bg-slate-50 rounded-lg"
+              data-lang-key="nav.features"
+            >
+              특징
+            </button>
+            <button
+              data-scroll-to="simulations"
+              class="nav-link text-left py-2 px-4 hover:bg-slate-50 rounded-lg"
+              data-lang-key="nav.simulations"
+            >
+              시뮬레이션
+            </button>
+            <button
+              data-scroll-to="contact"
+              class="nav-link text-left py-2 px-4 hover:bg-slate-50 rounded-lg"
+              data-lang-key="nav.contact"
+            >
+              문의하기
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <section
+        id="about"
+        class="h-screen w-full snap-start relative flex items-center justify-center overflow-hidden bg-slate-900 text-white"
+      >
+        <div class="absolute inset-0 z-0 bg-slate-900">
+          <img
+            src="./assets/Top_Image_1.png"
+            alt="Warehouse Robot Background"
+            class="hero-bg-img active absolute inset-0 w-full h-full object-cover"
+            style="opacity: 0.5; transition: opacity 2s ease-in-out"
+          />
+          <img
+            src="./assets/Top_Image_2.png"
+            alt="Warehouse Robot Background 2"
+            class="hero-bg-img absolute inset-0 w-full h-full object-cover"
+            style="opacity: 0; transition: opacity 2s ease-in-out"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-[#0B79BE]/40 to-slate-900/80 pointer-events-none"
+          ></div>
+        </div>
+        <div class="container mx-auto px-4 md:px-8 relative z-10 pt-20">
+          <div class="max-w-4xl">
+            <h1
+              class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 animate-on-scroll fade-in-up"
+              data-lang-key="hero.headline"
+            >
+              가장 합리적인 창고 로봇 솔루션
+            </h1>
+            <p
+              class="text-lg md:text-2xl text-slate-200 max-w-2xl animate-on-scroll fade-in-up"
+              style="transition-delay: 0.2s"
+              data-lang-key="hero.subtext"
+            >
+              인천 로보틱스는 혁신적인 기술로 물류 자동화의 새로운 기준을
+              제시합니다. 효율성과 정확성을 극대화하여 귀하의 비즈니스를
+              성장시키세요.
+            </p>
+            <div
+              class="mt-12 animate-on-scroll fade-in-scale"
+              style="transition-delay: 0.4s"
+            >
+              <div class="w-16 h-1 bg-[#0B79BE] rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section
+        id="features"
+        class="h-screen w-full snap-start flex flex-col justify-center bg-white text-slate-900 py-20 relative"
+      >
+        <div class="container mx-auto px-4 md:px-8 h-full flex flex-col">
+          <h2
+            class="text-3xl md:text-5xl font-bold mb-6 text-[#0B79BE] flex-shrink-0 animate-on-scroll fade-in-up"
+            data-lang-key="features.title"
+          >
+            주요 특징
+          </h2>
+          <div class="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+            <div
+              id="features-tabs"
+              class="w-full lg:w-1/3 flex flex-col gap-4 lg:h-full pr-2"
+            >
+              <!-- Feature tabs will be injected by JS -->
+            </div>
+            <div
+              class="w-full lg:w-2/3 bg-[#F5F9FF] rounded-2xl overflow-hidden relative shadow-inner border border-slate-200"
+            >
+              <img
+                id="feature-image"
+                src="./assets/Robot_Expand_6.png"
+                alt="Feature Image"
+                class="w-full h-full object-contain p-8"
+                style="transition: opacity 0.5s"
+              />
+              <div class="absolute bottom-0 right-0 p-6 pointer-events-none">
+                <span
+                  id="feature-number"
+                  class="text-9xl font-bold text-[#0B79BE]/5 font-mono select-none"
+                  >1</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulations Section -->
+      <section
+        id="simulations"
+        class="h-screen w-full snap-start flex items-center justify-center bg-slate-900 text-white relative overflow-hidden"
+      >
+        <div class="absolute inset-0 bg-[#0B79BE]/10 z-0"></div>
+        <div
+          class="container mx-auto px-4 md:px-8 relative z-10 h-full flex flex-col md:flex-row items-center gap-12"
+        >
+          <div
+            class="w-full md:w-1/3 flex flex-col justify-center items-start order-2 md:order-1 animate-on-scroll fade-in-up"
+          >
+            <h2
+              class="text-4xl md:text-6xl font-bold mb-6"
+              data-lang-key="simulations.title"
+            >
+              시뮬레이션
+            </h2>
+            <p
+              class="text-slate-300 text-lg mb-8 max-w-md"
+              data-lang-key="simulations.subtext"
+            >
+              실제 환경과 동일한 3D 시뮬레이션을 통해 로봇의 움직임을 미리
+              확인해보세요.
+            </p>
+            <a
+              href="http://sim.incheonrobotics.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block"
+            >
+              <button
+                class="bg-[#0B79BE] hover:bg-[#096199] text-white px-8 py-6 text-lg rounded-full flex items-center gap-3 group transition-all hover:scale-105"
+              >
+                <span data-lang-key="simulations.btnText"
+                  >시뮬레이션 체험하기</span
+                >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="group-hover:translate-x-1 transition-transform"
+                >
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  ></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+            </a>
+          </div>
+          <div
+            class="w-full md:w-2/3 h-[50vh] md:h-[60vh] bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-700 relative group order-1 md:order-2 animate-on-scroll fade-in-scale"
+          >
+            <video
+              src="assets/Demo_0.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+              class="w-full h-full object-cover"
+            ></video>
+            <div
+              class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"
+            >
+              <span
+                class="text-sm font-mono text-[#0B79BE] uppercase tracking-wider"
+                >Demo Preview</span
+              >
+              <p
+                class="text-white font-medium"
+                data-lang-key="simulations.videoAlt"
+              >
+                회사 소개 영상
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section
+        id="contact"
+        class="h-screen w-full snap-start flex flex-col bg-slate-50 relative overflow-hidden"
+      >
+        <div
+          class="container mx-auto px-4 md:px-8 flex-1 flex flex-col justify-center py-20 relative z-10"
+        >
+          <div class="flex flex-col md:flex-row gap-12 lg:gap-24 items-center">
+            <div class="w-full md:w-1/2 animate-on-scroll fade-in-up">
+              <h2
+                class="text-4xl md:text-5xl font-bold mb-8 text-slate-900"
+                data-lang-key="contact.title"
+              >
+                문의하기
+              </h2>
+              <p
+                class="text-slate-600 mb-12 text-lg leading-relaxed"
+                data-lang-key="contact.subtext"
+              >
+                인천 로보틱스와 함께 물류 혁신을 시작하세요. 궁금한 점이
+                있으시다면 언제든 문의해 주세요.
+              </p>
+              <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#0B79BE]/10 rounded-full text-[#0B79BE]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"
+                      ></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4
+                      class="font-bold text-slate-900"
+                      data-lang-key="contact.addressLabel"
+                    >
+                      주소
+                    </h4>
+                    <p
+                      class="text-slate-600"
+                      data-lang-key="contact.footer.companyAddr"
+                    >
+                      인천광역시 연수구 송도동
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#0B79BE]/10 rounded-full text-[#0B79BE]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                      <path
+                        d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900">Email</h4>
+                    <p
+                      class="text-slate-600"
+                      data-lang-key="contact.footer.email"
+                    >
+                      admin@incheonrobotics.com
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-full md:w-1/2 bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-on-scroll fade-in-up"
+              style="transition-delay: 0.2s"
+            >
+              <form id="contact-form" class="space-y-6">
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-slate-700"
+                    data-lang-key="contact.company"
+                    >회사명</label
+                  >
+                  <input
+                    name="company"
+                    placeholder="회사명을 입력하세요"
+                    class="bg-slate-50 border-slate-200 focus:border-[#0B79BE] h-12 w-full rounded-md border px-3 py-2 text-sm"
+                    required
+                    data-lang-placeholder="contact.company_placeholder"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-slate-700"
+                    data-lang-key="contact.contactInfo"
+                    >연락처 및 이메일</label
+                  >
+                  <input
+                    name="contactInfo"
+                    placeholder="연락처 및 이메일을 입력하세요"
+                    class="bg-slate-50 border-slate-200 focus:border-[#0B79BE] h-12 w-full rounded-md border px-3 py-2 text-sm"
+                    required
+                    data-lang-placeholder="contact.contactInfo_placeholder"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-slate-700"
+                    data-lang-key="contact.address"
+                    >주소</label
+                  >
+                  <input
+                    name="address"
+                    placeholder="주소를 입력하세요"
+                    class="bg-slate-50 border-slate-200 focus:border-[#0B79BE] h-12 w-full rounded-md border px-3 py-2 text-sm"
+                    required
+                    data-lang-placeholder="contact.address_placeholder"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <label
+                    class="text-sm font-medium text-slate-700"
+                    data-lang-key="contact.message"
+                    >메시지</label
+                  >
+                  <textarea
+                    name="message"
+                    class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm min-h-[100px]"
+                    placeholder="내용을 입력하세요"
+                    required
+                    data-lang-placeholder="contact.message_placeholder"
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-[#0B79BE] hover:bg-[#096199] text-white h-12 text-lg rounded-lg flex items-center justify-center"
+                >
+                  <span data-lang-key="contact.submit">보내기</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="ml-2"
+                  >
+                    <path d="m22 2-7 20-4-9-9-4Z"></path>
+                    <path d="M22 2 11 13"></path>
+                  </svg>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-8 snap-end">
+          <div
+            class="container mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-4"
+          >
+            <div class="flex items-center gap-2">
+              <img
+                src="./assets/Logo-removebg-preview.png"
+                alt="Incheon Robotics Logo"
+                class="w-6 h-6 brightness-0 invert"
+              />
+              <span
+                class="font-bold text-white"
+                data-lang-key="contact.footer.companyName"
+                >인천 로보틱스</span
+              >
+            </div>
+            <div class="text-sm text-center md:text-right">
+              <p data-lang-key="contact.footer.companyAddr">
+                인천광역시 연수구 송도동
+              </p>
+              <p
+                class="mt-1 text-[#0B79BE]"
+                data-lang-key="contact.footer.email"
+              >
+                admin@incheonrobotics.com
+              </p>
+            </div>
+          </div>
+          <div
+            class="container mx-auto px-4 md:px-8 mt-8 pt-4 border-t border-slate-800 text-xs text-center text-slate-600"
+          >
+            &copy; <span id="footer-year"></span> Incheon Robotics. All rights
+            reserved.
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
