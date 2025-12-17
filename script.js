@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const featuresData = [
     {
       id: 0,
-      iconImage: "./assets/Icon_1.png",
+      iconImage: "./assets/1_NC.png",
       title: { KR: "ASRS 물류로봇", EN: "ASRS Logistics Robot" },
       desc: {
         KR: "낮은 전력 소비로 작동하는 빠르고 정확한 물류 로봇입니다",
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: 1,
-      iconImage: "./assets/Icon_2.png",
+      iconImage: "./assets/2_NC.png",
       title: { KR: "ASRS 물류로봇(패널 상승)", EN: "ASRS Robot (Panel Up)" },
       desc: {
         KR: "최대 30kg까지 물류를 저장하고 운송합니다",
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: 2,
-      iconImage: "./assets/Icon_3.png",
+      iconImage: "./assets/3_NC.png",
       title: { KR: "ASRS 물류로봇(패널 하강)", EN: "ASRS Robot (Panel Down)" },
       desc: {
         KR: "최대 30kg까지 물류를 저장하고 운송합니다",
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: 3,
-      iconImage: "./assets/Icon_4.png",
+      iconImage: "./assets/4_NC.png",
       title: { KR: "ASRS Robot(내부)", EN: "ASRS Robot (Internal)" },
       desc: {
         KR: "인천 로보틱스가 직접 개발한 초정밀 물류 로봇을 만나보세요",
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       id: 4,
-      iconImage: "./assets/Icon_5.png",
+      iconImage: "./assets/5_NC.png",
       title: { KR: "로드블록", EN: "Roadblock" },
       desc: {
         KR: "안정적인 물류 저장 및 운송을 위한 로드블록입니다",
@@ -137,16 +137,22 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       image: "./assets/Robot_Expand_1.png",
     },
-  ];
+  ].map((feature) => {
+    const path = feature.iconImage.replace("_NC.png", "");
+    return {
+      ...feature,
+      iconImage_C: `${path}_C.png`,
+      iconImage_NC: `${path}_NC.png`,
+    };
+  });
 
   let currentLang = "KR";
-  let activeFeatureTab = 0;
+  let activeFeatureIndex = 0;
+  let isMobileView = window.innerWidth < 1024;
 
-  // --- UTILITY FUNCTIONS ---
   const getNestedValue = (obj, key) =>
     key.split(".").reduce((o, i) => (o ? o[i] : undefined), obj);
 
-  // --- LANGUAGE ---
   function setLanguage(lang) {
     if (!["KR", "EN"].includes(lang)) return;
     currentLang = lang;
@@ -154,24 +160,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-lang-key]").forEach((el) => {
       const key = el.getAttribute("data-lang-key");
       const text = getNestedValue(content[currentLang], key);
-      if (text) {
-        el.innerHTML = text;
-      }
+      if (text) el.innerHTML = text;
     });
 
     document.querySelectorAll("[data-lang-placeholder]").forEach((el) => {
       const key = el.getAttribute("data-lang-placeholder");
       const text = getNestedValue(content[currentLang].contact, key);
-      if (text) {
-        el.placeholder = text;
-      }
+      if (text) el.placeholder = text;
     });
 
     const newLang = currentLang === "KR" ? "EN" : "KR";
     document.getElementById("lang-text-desktop").textContent = newLang;
     document.getElementById("lang-text-mobile").textContent = newLang;
 
-    renderFeatureTabs(); // Re-render tabs with new language
+    initFeatures();
   }
 
   function initLangSwitcher() {
@@ -184,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .addEventListener("click", toggle);
   }
 
-  // --- SCROLL & NAVIGATION ---
   function initScrollspy() {
     const navbar = document.getElementById("navbar");
     const mainContainer = document.getElementById("main-container");
@@ -211,13 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initSmoothScroll() {
     document.querySelectorAll("[data-scroll-to]").forEach((link) => {
-      link.addEventListener("click", () => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
         const id = link.getAttribute("data-scroll-to");
         const section = document.getElementById(id);
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth" });
-        }
-        // Close mobile menu on click
+        if (section) section.scrollIntoView({ behavior: "smooth" });
         if (
           !document.getElementById("mobile-menu").classList.contains("hidden")
         ) {
@@ -240,7 +239,6 @@ document.addEventListener("DOMContentLoaded", () => {
       menuIcon.classList.toggle("hidden");
       xIcon.classList.toggle("hidden");
 
-      // Force navbar style update on menu toggle
       const mobileMenuOpen = !mobileMenu.classList.contains("hidden");
       if (mobileMenuOpen || isScrolled) {
         navbar.className =
@@ -252,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- SECTIONS ---
   function initHeroSlideshow() {
     const images = document.querySelectorAll(".hero-bg-img");
     let currentImageIndex = 0;
@@ -263,70 +260,163 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 10000);
   }
 
-  function renderFeatureTabs() {
+  function renderDesktopFeatures() {
     const tabsContainer = document.getElementById("features-tabs");
     if (!tabsContainer) return;
-
-    tabsContainer.innerHTML = ""; // Clear existing tabs
+    tabsContainer.innerHTML = "";
 
     featuresData.forEach((item, index) => {
-      const isActive = activeFeatureTab === index;
+      const isActive = activeFeatureIndex === index;
       const button = document.createElement("button");
       button.className = `text-left p-5 rounded-xl transition-all duration-300 border-2 group lg:flex-1 flex flex-col justify-center ${
         isActive
           ? "border-[#0B79BE] bg-[#0B79BE]/5 shadow-lg"
           : "border-slate-100 hover:border-[#0B79BE]/50 hover:bg-slate-50"
       }`;
-      button.onclick = () => {
-        activeFeatureTab = index;
-        renderFeatureTabs();
-        updateFeatureContent();
-      };
+      button.dataset.index = index;
+
+      const iconSrc = isActive ? item.iconImage_C : item.iconImage_NC;
 
       button.innerHTML = `
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="p-2 rounded-lg flex-shrink-0 ${
-                      isActive
-                        ? "bg-[#0B79BE] text-white"
-                        : "bg-slate-100 text-slate-600 group-hover:text-[#0B79BE]"
-                    }">
-                        <img src="${item.iconImage}" alt="Icon ${
+        <div class="flex items-center gap-4 mb-2">
+            <div class="p-2 rounded-lg flex-shrink-0 ${
+              isActive
+                ? "bg-[#0B79BE] text-white"
+                : "bg-slate-100 text-slate-600 group-hover:text-[#0B79BE]"
+            }">
+                <img src="${iconSrc}" alt="Icon ${
         index + 1
       }" class="w-7 h-7 object-contain">
-                    </div>
-                    <h3 class="text-xl font-bold ${
-                      isActive ? "text-[#0B79BE]" : "text-slate-800"
-                    }">
-                        ${item.title[currentLang]}
-                    </h3>
-                </div>
-                <p class="text-slate-600 leading-relaxed text-base pl-1">
-                    ${item.desc[currentLang]}
-                </p>
-            `;
+            </div>
+            <h3 class="text-xl font-bold ${
+              isActive ? "text-[#0B79BE]" : "text-slate-800"
+            }">
+                ${item.title[currentLang]}
+            </h3>
+        </div>
+        <p class="text-slate-600 leading-relaxed text-base pl-1">
+            ${item.desc[currentLang]}
+        </p>`;
       tabsContainer.appendChild(button);
     });
+    updateDesktopFeatureContent();
   }
 
-  function updateFeatureContent() {
+  function updateDesktopFeatureContent() {
     const featureImage = document.getElementById("feature-image");
     const featureNumber = document.getElementById("feature-number");
-    const activeData = featuresData[activeFeatureTab];
+    const activeData = featuresData[activeFeatureIndex];
 
     if (featureImage && featureNumber && activeData) {
       featureImage.style.opacity = 0;
       setTimeout(() => {
         featureImage.src = activeData.image;
         featureImage.alt = activeData.title[currentLang];
-        featureNumber.textContent = activeFeatureTab + 1;
+        featureNumber.textContent = activeFeatureIndex + 1;
         featureImage.style.opacity = 1;
       }, 300);
     }
   }
 
-  function initFeaturesTabs() {
-    renderFeatureTabs();
+  function handleDesktopFeatureClick(event) {
+    const button = event.target.closest("button[data-index]");
+    if (!button) return;
+
+    const index = parseInt(button.dataset.index, 10);
+    if (activeFeatureIndex !== index) {
+      activeFeatureIndex = index;
+      renderDesktopFeatures();
+    }
   }
+
+  function renderMobileFeatures() {
+    const tabsContainer = document.getElementById("features-tabs");
+    if (!tabsContainer) return;
+    tabsContainer.innerHTML = "";
+
+    featuresData.forEach((item, index) => {
+      const tabDiv = document.createElement("div");
+      tabDiv.className = "feature-tab";
+      tabDiv.dataset.index = index;
+
+      const button = document.createElement("button");
+      button.className = "feature-tab-button";
+
+      button.innerHTML = `
+        <div class="flex items-center gap-4 mb-2">
+            <div class="p-2 rounded-lg flex-shrink-0 bg-slate-100 text-slate-600">
+                <img src="${item.iconImage_NC}" alt="Icon ${
+        index + 1
+      }" class="w-7 h-7 object-contain">
+            </div>
+            <h3 class="text-xl font-bold text-slate-800">
+                ${item.title[currentLang]}
+            </h3>
+        </div>
+        <p class="text-slate-600 leading-relaxed text-base pl-1">
+            ${item.desc[currentLang]}
+        </p>`;
+
+      const mobileImageContainer = document.createElement("div");
+      mobileImageContainer.className = "feature-mobile-image-container";
+      mobileImageContainer.innerHTML = `<img src="${item.image}" alt="${item.title[currentLang]}" class="feature-mobile-image">`;
+
+      tabDiv.appendChild(button);
+      tabDiv.appendChild(mobileImageContainer);
+      tabsContainer.appendChild(tabDiv);
+    });
+  }
+
+  function handleMobileFeatureClick(event) {
+    const tab = event.target.closest(".feature-tab");
+    if (!tab) return;
+
+    const index = parseInt(tab.dataset.index, 10);
+    const featureData = featuresData[index];
+    const iconImg = tab.querySelector(".flex-shrink-0 img");
+
+    if (tab.classList.contains("active")) {
+      tab.classList.remove("active");
+      iconImg.src = featureData.iconImage_NC;
+    } else {
+      const currentlyActive = document.querySelector(
+        "#features-tabs .feature-tab.active"
+      );
+      if (currentlyActive) {
+        const oldIndex = parseInt(currentlyActive.dataset.index, 10);
+        const oldFeatureData = featuresData[oldIndex];
+        currentlyActive.classList.remove("active");
+        currentlyActive.querySelector(".flex-shrink-0 img").src =
+          oldFeatureData.iconImage_NC;
+      }
+      tab.classList.add("active");
+      iconImg.src = featureData.iconImage_C;
+    }
+  }
+
+  function initFeatures() {
+    const tabsContainer = document.getElementById("features-tabs");
+    if (!tabsContainer) return;
+
+    tabsContainer.removeEventListener("click", handleDesktopFeatureClick);
+    tabsContainer.removeEventListener("click", handleMobileFeatureClick);
+
+    if (isMobileView) {
+      renderMobileFeatures();
+      tabsContainer.addEventListener("click", handleMobileFeatureClick);
+    } else {
+      renderDesktopFeatures();
+      tabsContainer.addEventListener("click", handleDesktopFeatureClick);
+    }
+  }
+
+  window.addEventListener("resize", () => {
+    const newIsMobileView = window.innerWidth < 1024;
+    if (newIsMobileView !== isMobileView) {
+      isMobileView = newIsMobileView;
+      initFeatures();
+    }
+  });
 
   function initContactForm() {
     const form = document.getElementById("contact-form");
@@ -337,19 +427,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const contactInfo = formData.get("contactInfo");
       const address = formData.get("address");
       const message = formData.get("message");
-            
+
       const to = "admin@incheonrobotics.com";
       const subject = `[문의] ${company} - ${contactInfo}`;
       const body = `회사명: ${company}\n연락처 및 이메일: ${contactInfo}\n주소: ${address}\n\n메시지:\n${message}`;
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isMobileUser = /iPhone|iPad|iPod|Android/i.test(
+        navigator.userAgent
+      );
 
-      if (isMobile) {
-        const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      if (isMobileUser) {
+        const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(
+          subject
+        )}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
       } else {
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.open(gmailUrl, '_blank');
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(
+          subject
+        )}&body=${encodeURIComponent(body)}`;
+        window.open(gmailUrl, "_blank");
       }
     });
   }
@@ -377,13 +473,12 @@ document.addEventListener("DOMContentLoaded", () => {
       new Date().getFullYear();
   }
 
-  // --- INITIALIZE ALL ---
   initLangSwitcher();
   initScrollspy();
   initSmoothScroll();
   initMobileMenu();
   initHeroSlideshow();
-  initFeaturesTabs();
+  initFeatures();
   initContactForm();
   initScrollAnimations();
   initFooterYear();
