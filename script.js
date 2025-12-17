@@ -148,6 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentLang = "KR";
   let activeFeatureIndex = 0;
+  let currentImageElement = 1; // 1 or 2
   let isMobileView = window.innerWidth < 1024;
 
   const getNestedValue = (obj, key) =>
@@ -303,19 +304,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateDesktopFeatureContent() {
-    const featureImage = document.getElementById("feature-image");
+    const img1 = document.getElementById("feature-image-1");
+    const img2 = document.getElementById("feature-image-2");
     const featureNumber = document.getElementById("feature-number");
     const activeData = featuresData[activeFeatureIndex];
 
-    if (featureImage && featureNumber && activeData) {
-      featureImage.style.opacity = 0;
-      setTimeout(() => {
-        featureImage.src = activeData.image;
-        featureImage.alt = activeData.title[currentLang];
-        featureNumber.textContent = activeFeatureIndex + 1;
-        featureImage.style.opacity = 1;
-      }, 300);
-    }
+    if (!img1 || !img2 || !featureNumber || !activeData) return;
+
+    const currentImage = currentImageElement === 1 ? img1 : img2;
+    const nextImage = currentImageElement === 1 ? img2 : img1;
+
+    nextImage.src = activeData.image;
+    nextImage.alt = activeData.title[currentLang];
+    featureNumber.textContent = activeFeatureIndex + 1;
+
+    currentImage.style.opacity = 0;
+    nextImage.style.opacity = 1;
+
+    currentImageElement = currentImageElement === 1 ? 2 : 1;
   }
 
   function handleDesktopFeatureClick(event) {
