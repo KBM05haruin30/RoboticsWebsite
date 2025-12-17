@@ -342,9 +342,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const subject = `[문의] ${company} - ${contactInfo}`;
       const body = `회사명: ${company}\n연락처 및 이메일: ${contactInfo}\n주소: ${address}\n\n메시지:\n${message}`;
 
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-      window.open(gmailUrl, '_blank');
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+      } else {
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(gmailUrl, '_blank');
+      }
     });
   }
 
